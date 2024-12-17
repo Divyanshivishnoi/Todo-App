@@ -1,20 +1,43 @@
 import React from "react";
 
 const Input = ({ todos, setTodos }) => {
+
+  const colors = [
+    { name: "Green", colorClass: "green" },
+    { name: "Purple", colorClass: "purple" },
+    { name: "Blue", colorClass: "blue" },
+    { name: "Red", colorClass: "red" },
+  ];
+
+
   const toggleCompleted = (index) => {
-    setTodos(
-      todos.map((todo, i) =>
+    setTodos((prevTodos) =>
+      prevTodos.map((todo, i) =>
         i === index ? { ...todo, completed: !todo.completed } : todo
       )
     );
   };
 
+  // Delete a task
   const handleDelete = (index) => {
-    setTodos(todos.filter((_, i) => i !== index));
+    setTodos((prevTodos) => prevTodos.filter((_, i) => i !== index));
+  };
+
+  // Change color of a task
+  const handleColorChange = (index, color) => {
+    setTodos((prevTodos) =>
+      prevTodos.map((todo, i) => (i === index ? { ...todo, color } : todo))
+    );
+  };
+
+  // Filter tasks by color
+  const filterByColor = (color) => {
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.color === color));
   };
 
   return (
     <div>
+      {/* Task List */}
       {todos.map((todo, index) => (
         <div
           key={index}
@@ -25,7 +48,7 @@ const Input = ({ todos, setTodos }) => {
             type="checkbox"
             checked={todo.completed}
             onChange={() => toggleCompleted(index)}
-            className="form-checkbox h-5 w-5 text-blue-600 focus:ring focus:ring-blue-500"
+            className="form-checkbox h-4 w-4 text-blue-600 focus:ring focus:ring-blue-500"
           />
           {/* Task Name */}
           <h3
@@ -35,12 +58,18 @@ const Input = ({ todos, setTodos }) => {
           >
             {todo.name}
           </h3>
-          {/* Dropdown */}
-          <select className="border border-gray-300 rounded-lg p-2 shadow-sm focus:ring-2 focus:ring-blue-500">
-            <option>Green</option>
-            <option>Purple</option>
-            <option>Blue</option>
-            <option>Red</option>
+          {/* Color Selector */}
+          <select
+            className="border border-gray-300 rounded-lg p-2 shadow-sm focus:ring-2 focus:ring-blue-500"
+            value={todo.color || ""}
+            onChange={(e) => handleColorChange(index, e.target.value)}
+          >
+            <option value="">Select Color</option>
+            {colors.map(({ name, colorClass }) => (
+              <option key={colorClass} value={colorClass}>
+                {name}
+              </option>
+            ))}
           </select>
           {/* Delete Button */}
           <button
@@ -51,11 +80,23 @@ const Input = ({ todos, setTodos }) => {
           </button>
         </div>
       ))}
+
+      {/* Filter Buttons */}
+      <div className="mt-4 flex flex-col gap-4 justify-end h-full">
+        {colors.map(({ name, colorClass }) => (
+          <button
+            key={colorClass}
+            className={`w-28 h-10 text-white rounded-lg shadow-md bg-${colorClass}-500 hover:bg-${colorClass}-600 focus:ring focus:ring-${colorClass}-300`}
+            onClick={() => filterByColor(colorClass)}
+          >
+            Show {name}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default Input;
-
+export default Input;
 
 
